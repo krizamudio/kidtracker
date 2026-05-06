@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "362755272484",
+    "project_id": "kidtracker-282aa",
+    "storage_bucket": "kidtracker-282aa.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:362755272484:android:55998a24d1f8da181acdb1",
+        "android_client_info": {
+          "package_name": "com.kidtracker.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBYqC6YysSNUljCGUtT8F4-ALAri2S10uA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
