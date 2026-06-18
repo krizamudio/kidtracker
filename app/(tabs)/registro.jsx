@@ -14,15 +14,40 @@ import { useApp } from '../../src/context/AppContext';
 import { CONDUCTAS_POR_CATEGORIA } from '../../src/data/conductas';
 
 const INTENSIDADES = [
-  { id: 'leve',     label: 'Leve',     emoji: '🟢', color: colors.good },
-  { id: 'moderada', label: 'Moderada', emoji: '🟡', color: '#FCD34D' },
-  { id: 'grave',    label: 'Grave',    emoji: '🔴', color: colors.difficult },
+  {
+    id: 'leve',
+    label: 'Leve',
+    emoji: '🟢',
+    color: colors.good,
+    descripcion: 'La conducta está presente, pero causa poca interferencia y puede corregirse fácilmente.',
+  },
+  {
+    id: 'moderada',
+    label: 'Moderada',
+    emoji: '🟡',
+    color: '#FCD34D',
+    descripcion: 'La conducta afecta parcialmente la actividad y requiere varias indicaciones o redirección.',
+  },
+  {
+    id: 'grave',
+    label: 'Grave',
+    emoji: '🔴',
+    color: colors.difficult,
+    descripcion: 'La conducta interfiere significativamente con el aprendizaje, la convivencia o el funcionamiento diario y puede requerir intervención inmediata.',
+  },
 ];
 
 const ESTADO_DIA = [
   { id: 'bueno',   label: 'Buen día', emoji: '😊', color: colors.good },
   { id: 'regular', label: 'Regular',  emoji: '😐', color: '#FCD34D' },
   { id: 'dificil', label: 'Difícil',  emoji: '😔', color: colors.difficult },
+];
+
+const ESTADO_CUIDADOR = [
+  { id: 'tranquilo',  label: 'Tranquilo',  emoji: '😌', color: colors.good },
+  { id: 'cansado',    label: 'Cansado',    emoji: '😓', color: '#FCD34D' },
+  { id: 'frustrado',  label: 'Frustrado',  emoji: '😤', color: colors.difficult },
+  { id: 'ansioso',    label: 'Ansioso',    emoji: '😰', color: '#F472B6' },
 ];
 
 const FRECUENCIAS = [
@@ -42,30 +67,40 @@ const SectionHeader = ({ emoji, title, subtitle }) => (
   </View>
 );
 
-const ChipSelector = ({ options, selected, onSelect }) => (
-  <View style={styles.chipRow}>
-    {options.map((opt) => {
-      const isSelected = selected === opt.id;
-      return (
-        <TouchableOpacity
-          key={opt.id}
-          style={[
-            styles.chip,
-            isSelected && styles.chipActive,
-            opt.color && isSelected && { backgroundColor: opt.color + '30', borderColor: opt.color },
-          ]}
-          onPress={() => onSelect(opt.id)}
-          activeOpacity={0.7}
-        >
-          {opt.emoji && <Text style={styles.chipEmoji}>{opt.emoji}</Text>}
-          <Text style={[styles.chipText, isSelected && styles.chipTextActive]}>
-            {opt.label}
-          </Text>
-        </TouchableOpacity>
-      );
-    })}
-  </View>
-);
+const ChipSelector = ({ options, selected, onSelect, showDescription }) => {
+  const selectedOption = options.find(o => o.id === selected);
+  return (
+    <View>
+      <View style={styles.chipRow}>
+        {options.map((opt) => {
+          const isSelected = selected === opt.id;
+          return (
+            <TouchableOpacity
+              key={opt.id}
+              style={[
+                styles.chip,
+                isSelected && styles.chipActive,
+                opt.color && isSelected && { backgroundColor: opt.color + '30', borderColor: opt.color },
+              ]}
+              onPress={() => onSelect(opt.id)}
+              activeOpacity={0.7}
+            >
+              {opt.emoji && <Text style={styles.chipEmoji}>{opt.emoji}</Text>}
+              <Text style={[styles.chipText, isSelected && styles.chipTextActive]}>
+                {opt.label}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
+      {showDescription && selectedOption?.descripcion && (
+        <View style={[styles.descripcionBox, selectedOption.color && { borderLeftColor: selectedOption.color }]}>
+          <Text style={styles.descripcionText}>{selectedOption.descripcion}</Text>
+        </View>
+      )}
+    </View>
+  );
+};
 
 const TextAreaField = ({ label, value, onChangeText, placeholder, maxLength = 300 }) => {
   const [focused, setFocused] = useState(false);
@@ -96,6 +131,7 @@ export default function RegistroScreen() {
   const esInmediato = tipo === 'inmediato';
 
   const [estadoDia, setEstadoDia] = useState('');
+  const [estadoCuidador, setEstadoCuidador] = useState('');
   const [intensidad, setIntensidad] = useState('');
   const [frecuencia, setFrecuencia] = useState('');
   const [observaciones, setObservaciones] = useState('');
@@ -129,6 +165,7 @@ export default function RegistroScreen() {
 
   const resetForm = () => {
     setEstadoDia('');
+    setEstadoCuidador('');
     setIntensidad('');
     setFrecuencia('');
     setObservaciones('');
@@ -153,6 +190,7 @@ export default function RegistroScreen() {
       fecha: new Date().toISOString().split('T')[0],
       tipo: esInmediato ? 'inmediato' : 'diario',
       estado: estadoDia,
+      estadoCuidador,
       intensidad,
       frecuencia,
       observaciones,
@@ -230,6 +268,16 @@ export default function RegistroScreen() {
             />
           </Card>
 
+          {/* 1b. Estado del cuidador */}
+          <Card>
+            <SectionHeader emoji="👤" title="¿Cómo te sentiste como cuidador?" />
+            <ChipSelector
+              options={ESTADO_CUIDADOR}
+              selected={estadoCuidador}
+              onSelect={setEstadoCuidador}
+            />
+          </Card>
+
           {/* 2. Nota rápida (solo inmediato) */}
           {esInmediato && (
             <Card>
@@ -269,11 +317,12 @@ export default function RegistroScreen() {
 
               {/* Intensidad */}
               <Card>
-                <SectionHeader emoji="📊" title="Intensidad general" />
+                <SectionHeader emoji="📊" title="Intensidad general" subtitle="Depende del nivel de interferencia en las actividades" />
                 <ChipSelector
                   options={INTENSIDADES}
                   selected={intensidad}
                   onSelect={setIntensidad}
+                  showDescription
                 />
               </Card>
 
@@ -440,6 +489,18 @@ const styles = StyleSheet.create({
   chipActive: {
     backgroundColor: colors.primaryLight,
     borderColor: colors.primary,
+  },
+  descripcionBox: {
+    marginTop: spacing.sm,
+    backgroundColor: colors.background,
+    borderRadius: 10,
+    padding: spacing.md,
+    borderLeftWidth: 4,
+  },
+  descripcionText: {
+    fontSize: typography.sizes.sm,
+    color: colors.textSecondary,
+    lineHeight: 20,
   },
   chipEmoji: { fontSize: 14 },
   chipText: {

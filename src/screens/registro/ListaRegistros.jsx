@@ -16,6 +16,13 @@ const estadoConfig = {
   dificil: { color: colors.difficult,  emoji: '😔', label: 'Difícil' },
 };
 
+const cuidadorConfig = {
+  tranquilo:  { emoji: '😌', label: 'Tranquilo' },
+  cansado:    { emoji: '😓', label: 'Cansado' },
+  frustrado:  { emoji: '😤', label: 'Frustrado' },
+  ansioso:    { emoji: '😰', label: 'Ansioso' },
+};
+
 const FILTROS = [
   { id: 'todos',   label: 'Todos',    emoji: '📋' },
   { id: 'bueno',   label: 'Buenos',   emoji: '😊' },
@@ -97,6 +104,15 @@ const RegistroCard = ({ registro, onDelete }) => {
                   </View>
                 ))}
               </View>
+            </View>
+          )}
+
+          {registro.estadoCuidador && cuidadorConfig[registro.estadoCuidador] && (
+            <View style={styles.detalleSection}>
+              <Text style={styles.detalleSectionTitle}>👤 Estado del cuidador</Text>
+              <Text style={styles.detalleText}>
+                {cuidadorConfig[registro.estadoCuidador].emoji} {cuidadorConfig[registro.estadoCuidador].label}
+              </Text>
             </View>
           )}
 

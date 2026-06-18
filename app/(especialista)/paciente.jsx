@@ -17,6 +17,13 @@ const estadoConfig = {
   dificil: { color: colors.difficult,  emoji: '😔', label: 'Difícil' },
 };
 
+const cuidadorConfig = {
+  tranquilo:  { emoji: '😌', label: 'Tranquilo' },
+  cansado:    { emoji: '😓', label: 'Cansado' },
+  frustrado:  { emoji: '😤', label: 'Frustrado' },
+  ansioso:    { emoji: '😰', label: 'Ansioso' },
+};
+
 const getConductaLabel = (id) => {
   for (const cat of Object.values(CONDUCTAS_POR_CATEGORIA)) {
     for (const sub of cat.subcategorias) {
@@ -263,6 +270,15 @@ export default function PacienteScreen() {
                               </View>
                             </View>
                           )}
+                          {registro.estadoCuidador && cuidadorConfig[registro.estadoCuidador] && (
+                            <View style={styles.detalleSection}>
+                              <Text style={styles.detalleTitulo}>👤 Estado del cuidador</Text>
+                              <Text style={styles.detalleTexto}>
+                                {cuidadorConfig[registro.estadoCuidador].emoji} {cuidadorConfig[registro.estadoCuidador].label}
+                              </Text>
+                            </View>
+                          )}
+
                           {registro.observaciones ? (
                             <View style={styles.detalleSection}>
                               <Text style={styles.detalleTitulo}>📝 Observaciones</Text>
